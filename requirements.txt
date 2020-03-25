@@ -1,5 +1,4 @@
-Cython
+llvmlite==0.23
 chrisapp
 pudb
 numpy
-numba
