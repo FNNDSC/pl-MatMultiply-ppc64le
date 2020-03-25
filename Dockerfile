@@ -21,17 +21,22 @@
 #   docker run -ti -e HOST_IP=$(ip route | grep -v docker | awk '{if(NF==11) print $9}') --entrypoint /bin/bash local/pl-MatMultiply
 #
 
-
 FROM nvidia/cuda-ppc64le:10.1-devel
 LABEL maintainer "NVIDIA CORPORATION <cudatools@nvidia.com>"
 ENV APPROOT="/usr/src/matmultiply"
 COPY ["matmultiply", "${APPROOT}"]
 COPY ["requirements.txt", "${APPROOT}"]
 WORKDIR $APPROOT
+
+
 RUN apt update
-RUN apt install -y  python3
+RUN apt install -y  python3 wget unzip llvm
 RUN apt install -y python3-pip
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
-CMD ["python3 matmultiply.py", "--help"]
 
+RUN wget https://github.com/numba/numba/archive/0.38.0.zip && \
+        unzip 0.38.0.zip && \
+        cd numba-0.38.0/ && \
+        python3 setup.py install
+CMD ["python3 matmultiply.py", "--help"]
