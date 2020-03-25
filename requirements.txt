@@ -1,3 +1,4 @@
+Cython
 chrisapp
 pudb
 numpy
