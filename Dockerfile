@@ -26,17 +26,16 @@ LABEL maintainer "NVIDIA CORPORATION <cudatools@nvidia.com>"
 ENV APPROOT="/usr/src/matmultiply"
 COPY ["matmultiply", "${APPROOT}"]
 COPY ["requirements.txt", "${APPROOT}"]
+COPY ["dependencies.txt","${APPROOT}"]
 WORKDIR $APPROOT
 
 
 RUN apt update
-RUN apt install -y  python3 wget unzip llvm
+RUN apt install -y build-essential python3 llvm-7
+RUN ln -s /usr/bin/llvm-config-7 /usr/bin/llvm-config
 RUN apt install -y python3-pip
-RUN pip3 install --upgrade pip
+RUN pip3 install -r dependencies.txt
 RUN pip3 install -r requirements.txt
-
-RUN wget https://github.com/numba/numba/archive/0.38.0.zip && \
-        unzip 0.38.0.zip && \
-        cd numba-0.38.0/ && \
-        python3 setup.py install
+ENTRYPOINT ["python3"]
 CMD ["python3 matmultiply.py", "--help"]
+
