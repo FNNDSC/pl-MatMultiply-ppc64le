@@ -91,16 +91,16 @@ Now, prefix all calls with
 
 .. code:: bash
 
-    docker run --rm -v $(pwd)/out:/outgoing                             \
-            fnndsc/pl-matmultiply matmultiply.py                        \
+docker run  --security-opt label=type:nvidia_container_t pupiltong/pl-matmultiply-ppc64le:latest matmultiply.py in out
 
 Thus, getting inline help is:
 
 .. code:: bash
 
     mkdir in out && chmod 777 out
-    docker run --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
-            fnndsc/pl-matmultiply matmultiply.py                        \
+   docker run  --security-opt label=type:nvidia_container_t \
+   --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
+            pupiltong/pl-matmultiply-ppc64le:latest                    \
             --man                                                       \
             /incoming /outgoing
 
