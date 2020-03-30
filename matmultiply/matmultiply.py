@@ -11,6 +11,7 @@
 
 import os
 import sys
+import csv
 import MatCal
 
 sys.path.append(os.path.dirname(__file__))
@@ -100,14 +101,89 @@ class Matmultiply(ChrisApp):
         Define the CLI arguments accepted by this plugin app.
         Use self.add_argument to specify a new app argument.
         """
+        self.add_argument('-c','--coe',
+                          dest      =   'coenum',
+                          type      =   str,
+                          optional  =   True,
+                          help      =   'assign coe range, default 32, assign by startNumber : stepLength : endnumber',
+                          default   =   '32')
 
-    def run(self, options):
+    def run(self,options):
         """
         Define the code to be run by this plugin app.
         """
         print(Gstr_title)
-        obj = MatCal.MatMulBench()
-        print(obj.Run())
+
+        self.clist = self.generateCOElist(options.coenum)
+        print("clist:" + str(self.clist))######################
+        if len(self.clist) != 0:
+            for cnum in self.clist:
+                print("cur cnum is " + str(cnum)) ######################
+                c = int(cnum)
+                obj = MatCal.MatMulBench(c)
+                ms, st, ft, et = obj.Run()
+                print("cur list of pars:" + str([ms,st,ft,et])) ######################
+                parse = [{'Matrix_Size': ms, 'Start_Time': st, 'Finish_Time': ft, 'Elapse_Time': et}]
+                self.createOrUpdate(parse, options.inputdir, options.outputdir)
+                print(parse)
+
+    def createOrUpdate(self, parse, indir, outdir):
+        headers = ["Matrix_Size", "Start_Time", "Finish_Time", "Elapse_Time"]
+        # open an csv file at current dictionary with name database.csv
+
+        # print("indir: " + os.getcwd() + "/" + indir)
+        # print("outdir: " + os.getcwd() + "/" + outdir)
+        # print("current path: " + os.getcwd())
+#
+        # # os.chdir(os.getcwd() + "/" + outdir)
+        # print("cur dir : " + os.getcwd())
+
+        # print("indir is :" + os.path.abspath(indir))
+        # childdir = os.path.abspath(indir)
+        # os.chdir(outdir)
+        # print("chdir finished, cur path:" + os.getcwd())
+
+        filepath = outdir  + '/MultiplyRecord.csv'
+
+        print("filepath:" + filepath)
+        if (os.path.exists(filepath)):
+            # if the file exist add the value of the dictionary,else will build a new file with the header
+            with open(filepath, 'a+') as f:
+
+                f_csv = csv.DictWriter(f, headers)
+                for item in parse:
+                    f_csv.writerow(item)
+        else:
+            # %s/timestamp.json' % options.outputdir,
+            with open(filepath, 'a+') as f:
+                f_csv = csv.DictWriter(f, headers)
+                # write headers to database.csv
+                f_csv.writeheader()
+                # write values of input Python Dictionary to database.csv row by row
+                for item in parse:
+                    f_csv.writerow(item)
+    def generateCOElist(self,cpar):
+        ## assume input as 32,100,500
+        ## start,step,end
+        ## start < end, step positive number
+        COElist = []
+        pars = cpar.split(',')
+        if len(pars) == 1:
+            COElist.append(pars[0])
+        elif len(pars) != 3:
+            print("Unexpected error with COE parameter, try correct format like \"32,32,128\" ")
+        elif int(pars[0]) > int(pars[2]) or int(pars[0]) <= 0 or int(pars[2]) <= 0 or int(pars[1]) <=0:
+            print("start coe must be less than finish coe, no negative or zero is allowed!")
+        else:
+            cur = int(pars[0])
+            step = int(pars[1])
+            end = int(pars[2])
+            while cur <= end:
+                COElist.append(cur)
+                cur += step
+        return COElist
+
+
 
     def show_man_page(self):
         """
