@@ -87,25 +87,29 @@ Using ``docker run``
 
 To run using ``docker``, be sure to assign an "input" directory to ``/incoming`` and an output directory to ``/outgoing``. *Make sure that the* ``$(pwd)/out`` *directory is world writable!*
 
-Now, prefix all calls with 
 
 .. code:: bash
 
-docker run  --security-opt label=type:nvidia_container_t pupiltong/pl-matmultiply-ppc64le:latest matmultiply.py in out
-
-Thus, getting inline help is:
-
-.. code:: bash
-
-    mkdir in out && chmod 777 out
-   docker run  --security-opt label=type:nvidia_container_t \
-   --rm -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing      \
-            pupiltong/pl-matmultiply-ppc64le:latest                    \
-            --man                                                       \
-            /incoming /outgoing
+    mkdir in out && chmod 777 out                                       \
+    docker run --runtime=nvidia                                         \   
+                -e NVIDIA_VISIBLE_DEVICES=1                             \
+                -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing          \
+                fnndsc/pl-matrixmultiply                                \
+                matmultiply.py                                          \
+                -c 32,32,128                                            \
+                /incoming /outgoing                 
 
 Examples
 --------
+.. code:: bash
+
+    docker run --runtime=nvidia                                         \   
+                -e NVIDIA_VISIBLE_DEVICES=1                             \
+                -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing          \
+                fnndsc/pl-matrixmultiply                                \
+                matmultiply.py                                          \
+                -c 32,32,128                                            \
+                /incoming /outgoing                 
 
 
 
