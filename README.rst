@@ -91,10 +91,9 @@ To run using ``docker``, be sure to assign an "input" directory to ``/incoming``
 .. code:: bash
 
     mkdir in out && chmod 777 out                                       \
-    docker run --runtime=nvidia                                         \   
-                -e NVIDIA_VISIBLE_DEVICES=1                             \
+    docker run  --security-opt label=type:nvidia_container_t            \   
                 -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing          \
-                fnndsc/pl-matrixmultiply                                \
+                fnndsc/pl-matrixmultiply_moc_ppc64                                \
                 matmultiply.py                                          \
                 -c 32,32,128                                            \
                 /incoming /outgoing                 
@@ -103,14 +102,12 @@ Examples
 --------
 .. code:: bash
 
-    docker run --runtime=nvidia                                         \   
-                -e NVIDIA_VISIBLE_DEVICES=1                             \
+    docker run  --security-opt label=type:nvidia_container_t            \   
                 -v $(pwd)/in:/incoming -v $(pwd)/out:/outgoing          \
-                fnndsc/pl-matrixmultiply                                \
+                fnndsc/pl-matrixmultiply_moc_ppc64                                \
                 matmultiply.py                                          \
                 -c 32,32,128                                            \
-                /incoming /outgoing                 
-
+                /incoming /outgoing   
 
 
 
