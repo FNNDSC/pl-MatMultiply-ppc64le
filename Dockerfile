@@ -22,7 +22,7 @@
 #
 # Haoyang Wang haoyangw@bu.edu
 FROM nvidia/cuda-ppc64le:10.1-devel
-LABEL maintainer "NVIDIA CORPORATION <cudatools@nvidia.com>"
+LABEL maintainer "haoyangw@bu.edu"
 ENV APPROOT="/usr/src/matmultiply"
 COPY ["matmultiply", "${APPROOT}"]
 COPY ["requirements.txt", "${APPROOT}"]
